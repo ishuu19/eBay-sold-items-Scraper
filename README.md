@@ -1,7 +1,7 @@
-# eBay Graded Cards Scraper
+eBay Graded Cards Scraper
 This Python script is designed to scrape eBay listings for graded cards and extract relevant information, such as title, price, condition, and sold date. The script utilizes the BeautifulSoup library for HTML parsing and the requests library for making HTTP requests.
 
-# How to Use
+How to Use
 Set the Number of Pages: Adjust the num_pages variable to specify the number of eBay pages you want to scrape. This determines the extent of your data collection.
 python
 Copy code
@@ -42,7 +42,7 @@ sold_dates = [sold_date.text.strip() for sold_date in soup.select('.s-item__titl
 # Write data to CSV
 for title, price, condition, sold_date in zip(titles, prices, conditions, sold_dates):
     csv_writer.writerow([title, price, condition, sold_date])
-Full Code
+# Full Code
 python
 Copy code
 import requests

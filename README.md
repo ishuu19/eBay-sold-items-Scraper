@@ -1,5 +1,3 @@
-# eBay Graded Cards Scraper
-
 # eBay Graded Cards Scraper with Selenium
 
 This Python script enhances the eBay Graded Cards Scraper by incorporating the Selenium library, allowing for dynamic content loading. With this script, you can easily extract information such as the title, price, condition, and sold date from eBay listings for graded cards.
@@ -88,5 +86,68 @@ This Python script enhances the eBay Graded Cards Scraper by incorporating the S
     driver.quit()
     ```
 
-Feel free to customize the script to your specific needs! Happy scraping!
+8. **Full Code:**
 
+    ```python
+    from bs4 import BeautifulSoup
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    import csv
+
+    # Set the number of pages you want to scrape
+    num_pages = 100  # Change this to the desired number of pages
+
+    # eBay base URL
+    base_url = 'https://www.ebay.com/sch/i.html'
+    search_params = {
+        '_fsrp': 1,
+        '_from': 'R40',
+        'LH_Complete': 1,
+        'LH_Sold': 1,
+        '_nkw': 'graded+cards',
+        '_sacat': 0,
+        '_oaa': 1,
+        '_dcat': 261328,
+        '_ipg': 240,
+    }
+
+    # Create a CSV file and write headers
+    with open('ebay_listings.csv', 'w', newline='', encoding='utf-8') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(['Title', 'Price', 'Condition', 'Sold Date'])
+
+        # Set up Selenium webdriver
+        driver = webdriver.Chrome()  # You may need to adjust this based on your browser and its driver
+
+        # Loop through pages
+        for page in range(1, num_pages + 1):
+            # Add page parameter to search_params
+            search_params['_pgn'] = page
+
+            # Construct the URL
+            url = f"{base_url}?{('&'.join(f'{k}={v}' for k, v in search_params.items()))}"
+
+            # Use Selenium to load the page and wait for content to load
+            driver.get(url)
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 's-item__title')))
+
+            # Parse the HTML content using BeautifulSoup
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+            # Extract data using BeautifulSoup
+            titles = [title.text.strip() for title in soup.select('.s-item__title')]
+            prices = [price.text.strip() for price in soup.select('.s-item__price')]
+            conditions = [condition.text.strip() for condition in soup.select('.SECONDARY_INFO')]
+            sold_dates = [sold_date.text.strip() for sold_date in soup.select('.s-item__title--tag')]
+
+            # Write data to CSV
+            for title, price, condition, sold_date in zip(titles, prices, conditions, sold_dates):
+                csv_writer.writerow([title, price, condition, sold_date])
+
+        # Close the Selenium webdriver
+        driver.quit()
+    ```
+
+Feel free to customize the script to your specific needs! Happy scraping!
